@@ -654,6 +654,10 @@ static void show_s4_number_x10(s32 number, u8 atr){
 }
 
 static void show_clock_s3(void) {
+	if (cfg.flg3.no_clock_display) {
+		clear_s3();
+		return;
+	}
 #if (DEV_SERVICES & SERVICE_HARD_CLOCK)
 	u8 hrs = rtc.hours;
 	if(cfg.flg.time_am_pm) {
@@ -675,7 +679,6 @@ static void show_clock_s3(void) {
 
 	clear_s3();
 	display_buff[10] = BIT(0); // ":"
-
 	lcd_set_digit(display_buff, hrs / 10 % 10, sb_s3[0]);
 	lcd_set_digit(display_buff, hrs % 10, sb_s3[1]);
 	lcd_set_digit(display_buff, min / 10 % 10, sb_s3[2]);
@@ -684,6 +687,10 @@ static void show_clock_s3(void) {
 }
 
 static void show_clock_s1(void) {
+	if (cfg.flg3.no_clock_display) {
+		clear_s1();
+		return;
+	}
 #if (DEV_SERVICES & SERVICE_HARD_CLOCK)
 	clear_s1();
 	display_buff[1] = BIT(0); // ":"
@@ -705,7 +712,6 @@ static void show_clock_s1(void) {
 
 	clear_s1();
 	display_buff[1] = BIT(0); // ":"
-
 	lcd_set_digit(display_buff, hrs / 10 % 10, sb_s1[0]);
 	lcd_set_digit(display_buff, hrs % 10, sb_s1[1]);
 	lcd_set_digit(display_buff, min / 10 % 10, sb_s1[2]);
@@ -874,7 +880,7 @@ void lcd(void) {
 	}
 	display_buff[3] &= ~(BIT(0)); // PM
 	display_buff[2] &= ~(BIT(0)); // AM
-	if(cfg.flg.time_am_pm) {
+	if(!cfg.flg3.no_clock_display && cfg.flg.time_am_pm) {
 		if(rtc.hours >= 12) {
 			display_buff[2] |= BIT(0);
 		} else {

@@ -19,7 +19,6 @@ $(OUT_PATH)/src/epd_cgg1.o \
 $(OUT_PATH)/src/epd_cgg1n.o \
 $(OUT_PATH)/src/epd_mho_c401.o \
 $(OUT_PATH)/src/epd_mho_c401n.o \
-$(OUT_PATH)/src/epd_lywsd02mmc.o \
 $(OUT_PATH)/src/sensors.o \
 $(OUT_PATH)/src/ens160.o \
 $(OUT_PATH)/src/scd41.o \

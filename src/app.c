@@ -83,6 +83,9 @@ const cfg_t def_cfg = {
 		.event_adv_cnt = 6,
 		.flg3.adv_interval_delay = 10,
 #if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+		.flg3.no_clock_display = true,
+#endif
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
 		.advertising_interval = 80, // multiply by 62.5 ms = 5 sec
 		.measure_interval = 4, // * advertising_interval = 20 sec
 		.hw_ver = HW_VER_MJWSD05MMC,
@@ -811,6 +814,13 @@ void user_init_normal(void) {//this will get executed one time after power up
 			cfg.flg2.longrange = 0;
 			flash_write_cfg(&cfg, EEP_ID_CFG, sizeof(cfg));
 		}
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+		/* OTA keeps cfg in flash; apply hide-clock default once after upgrade to 0x58+. */
+		if (old_ver < 0x58) {
+			cfg.flg3.no_clock_display = def_cfg.flg3.no_clock_display;
+			flash_write_cfg(&cfg, EEP_ID_CFG, sizeof(cfg));
+		}
+#endif
 	} else {
 #if (DEV_SERVICES & SERVICE_PINCODE)
 		pincode = 0;

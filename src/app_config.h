@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#define VERSION 0x57	 // BCD format (0x34 -> '3.4')
+#define VERSION 0x58	 // BCD format (0x34 -> '3.4')
 #define EEP_SUP_VER 0x09 // EEP data minimum supported version
 
 // DevID:

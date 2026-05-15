@@ -20,6 +20,7 @@ $(OUT_PATH)/src/epd_cgg1n.o \
 $(OUT_PATH)/src/epd_mho_c401.o \
 $(OUT_PATH)/src/epd_mho_c401n.o \
 $(OUT_PATH)/src/sensors.o \
+$(OUT_PATH)/src/sensor_lx.o \
 $(OUT_PATH)/src/ens160.o \
 $(OUT_PATH)/src/scd41.o \
 $(OUT_PATH)/src/ina226.o \
@@ -47,6 +48,7 @@ $(OUT_PATH)/src/custom_beacon.o \
 $(OUT_PATH)/src/mi_beacon.o \
 $(OUT_PATH)/src/bthome_beacon.o \
 $(OUT_PATH)/src/scanning.o \
+$(OUT_PATH)/src/xbr818.o \
 $(OUT_PATH)/src/main.o
 
 

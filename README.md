@@ -1,5 +1,7 @@
 # Custom firmware for BLE thermometers on the Telink chipset.
 
+Supported chipset: TLSR8250, TLSR8251, TLSR8253, TLSR8258, TLSR8359, TLSR8656, Z2. 
+
 **Warning:** 
 * [Firmware version 2.1.1_0159 requires registration in MI-Home and obtaining IDs](https://github.com/pvvx/ATC_MiThermometer/issues/602#issue-2786915630).
 * Xiaomi LYWSD03MMC version B1.5/B1.6 released since 2025.03 are not recommended for purchase due to [high current consumption](https://github.com/pvvx/ATC_MiThermometer/issues/664#issuecomment-3092344109
@@ -48,6 +50,8 @@ Access to github is already slowing down. Most Internet information resources ha
 ![blethr.jpg](https://raw.githubusercontent.com/pvvx/pvvx.github.io/refs/heads/master/blethr/img/blethr.jpg)
 
 **Supported models:**
+
+* [Full list of supported devices](https://github.com/pvvx/pvvx.github.io/blob/master/README.md)
 
 (!) It is not recommended to buy Tuya thermometers with CHT8305 sensors and/or BL55028 LCD driver chips. They have increased consumption and are not compatible with battery operation. This is a dummy thermometer from Tuya.
 
@@ -299,7 +303,9 @@ In case you want to go back to the original firmware, you can download them here
 |     5.3 | Correction of OTA operation for Zigbee firmware. Optimization of work with Uart LCD for LYWSD03MMC HW: B1.5, B1.6. Added test version for LYWSD03MMC with new HW (3.2025) |
 |     5.4 | MJWSD05MMC(en) date MM/DD or DD/MM. Added [ZG-303Z](https://pvvx.github.io/ZG-303Z/), ZBEACON-TH01. Add CHT8215 to ZTH01. Display auto-detection update for LYWSD03MMC B1.6. |
 |     5.5 | Added [ZBEACON-MC](https://pvvx.github.io/Zbeacon-MC). For LYWSD03MMC B1.6(B1.1) LCD SPI speed has been reduced. Modified initialization of LCD displays for Xiaomi LYWSD03MMC B1.1, B1.5, B1.6. |
-|     5.6 beta | Fix LCD LYWSD03MMC B1.6. Added new HW version LYWSD03MMC (LCD-SPI/SHTC3). Added [ZBEACON-TH01-v2.0](https://pvvx.github.io/Zbeacon-TH01-v2.0) |
+|     5.6 | Fix LCD LYWSD03MMC B1.6. Added new HW version LYWSD03MMC (LCD-SPI/SHTC3). Added [ZBEACON-TH01-v2.0](https://pvvx.github.io/Zbeacon-TH01-v2.0) |
+|     5.7 | Fix SHTC3 sensor... |
+|     5.8 | Added ZG-204ZV, LYWSD02MMC. Supports WHT20 sensor. |
 |     --- |  |
 |     6.0 | [Starting with version 6.0](https://github.com/pvvx/ATC_MiThermometer/issues/727), support for non-standard and unregistered in Bluetooth SIG UUIDs and BLE advertising formats will be discontinued. Only [BTHome ver 2](https://bthome.io/) will be supported! |
 

@@ -48,6 +48,14 @@ enum {
 
 // cfg.flg3
 #define MASK_FLG3_WEEKDAY	0x80
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+/* TelinkMiFlasher "12-hour clock" (cfg.flg.time_am_pm, bit 0x20):
+ * 0 = hide time on LCD; s2 shows room setpoint; PVVX "batt" = setpoint x0.5 (OMG: consigne = batt/2, pile = volt).
+ * 1 = show clock in 12-hour AM/PM format; normal batt % in advertising. */
+#define cfg_hide_clock()	(!cfg.flg.time_am_pm)
+#else
+#define cfg_hide_clock()	0
+#endif
 
 
 typedef struct __attribute__((packed)) _cfg_t {
@@ -123,8 +131,7 @@ typedef struct __attribute__((packed)) _cfg_t {
 
 	struct __attribute__((packed)) {
 		u8 adv_interval_delay	: 4; // 0..15,  in 0.625 ms, a pseudo-random value in the range from 0 to X ms is added to a fixed advInterval so that advertising events change over time.
-		u8 no_clock_display		: 1; // do not display time on LCD (MJWSD05MMC*)
-		u8 reserved				: 1;
+		u8 reserved				: 2;
 		u8 date_ddmm			: 1; // display mm:dd (MJWSD05MMC en)
 #if (DEVICE_TYPE == DEVICE_LYWSD02MMC)
 		u8 show_day_of_week		: 1; // display day of week (LYWSD02MMC)
@@ -141,6 +148,9 @@ typedef struct __attribute__((packed)) _cfg_t {
 	u8 min_step_time_update_lcd; // x0.05 sec, 0.5..12.75 sec (10..255)
 	u8 hw_ver; // read only
 	u8 averaging_measurements; // * measure_interval, 0 - off, 1..255 * measure_interval
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+	u8 room_sp_idx; // index into room setpoint table (°C consigne pièce)
+#endif
 }cfg_t;
 extern cfg_t cfg;
 extern const cfg_t def_cfg;
@@ -358,6 +368,12 @@ static inline u8 get_key2_pressed(void) {
 	return BM_IS_SET(reg_gpio_in(GPIO_KEY2), GPIO_KEY2 & 0xff);
 }
 #endif // (DEV_SERVICES & SERVICE_KEY)
+#ifdef GPIO_KEY1
+/* Active low (pull-up): 1 = pressed. */
+static inline u8 get_key1_pressed(void) {
+	return !BM_IS_SET(reg_gpio_in(GPIO_KEY1), GPIO_KEY1 & 0xff);
+}
+#endif
 #endif // (DEV_SERVICES & SERVICE_KEY) || (DEV_SERVICES & SERVICE_RDS)
 
 void check_battery(void);

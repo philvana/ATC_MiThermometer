@@ -38,7 +38,10 @@ const trigger_t def_trg = {
 #endif
 #if (DEV_SERVICES & SERVICE_RDS)
 		.rds_time_report = 3600, // 1 hours
-#if (DEV_SERVICES & SERVICE_KEY)
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+		.rds.type1 = RDS_SWITCH,
+		.rds.rs1_invert = 1, /* PC4 key: active low */
+#elif (DEV_SERVICES & SERVICE_KEY)
 		.rds.type1 = RDS_SWITCH,
 #else
 		.rds.type1 = RDS_CONNECT,

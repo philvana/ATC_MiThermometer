@@ -15,6 +15,9 @@
 #endif
 #include "custom_beacon.h"
 #include "ccm.h"
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+#include "room_setpoint.h"
+#endif
 
 #if (DEV_SERVICES & SERVICE_BINDKEY)
 
@@ -71,7 +74,11 @@ void pvvx_encrypt_data_beacon(void) {
 	p->head.counter = (u8)adv_buf.send_count;
 	data.temp = measured_data.temp;
 	data.humi = measured_data.humi;
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+	data.bat = room_sp_pvvx_batt_byte();
+#else
 	data.bat = measured_data.battery_level;
+#endif
 #if (DEV_SERVICES & SERVICE_TH_TRG)
 	data.trg = trg.flg_byte;
 #else
@@ -110,7 +117,11 @@ void pvvx_data_beacon(void) {
 #else
 	p->battery_mv = measured_data.battery_mv; // x mV
 #endif
-	p->battery_level = measured_data.battery_level; // x1 %
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+	p->battery_level = room_sp_pvvx_batt_byte();
+#else
+	p->battery_level = measured_data.battery_level;
+#endif
 	p->counter = (u8)adv_buf.send_count;
 #if (DEV_SERVICES & SERVICE_TH_TRG)
 	p->flags = trg.flg_byte;

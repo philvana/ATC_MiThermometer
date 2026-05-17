@@ -266,6 +266,7 @@ void rds_task(void) {
 					flash_write_cfg(&rds.count_short[1], EEP_ID_RPC, sizeof(rds.count_short[1]));
 				}
 #endif
+#if !((DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN))
 				if (trg.rds.type1 == RDS_COUNTER) { // counter mode
 					if ((rds.count1 & 0xffff) == 0) { // report 'overflow 16 bit count'
 						rds.event = trg.rds.type1;
@@ -273,6 +274,16 @@ void rds_task(void) {
 				} else if (trg.rds.type1 == RDS_SWITCH) { // switch mode
 					rds.event = trg.rds.type1;
 				}
+#else
+				if (!cfg_hide_clock()) {
+					if (trg.rds.type1 == RDS_COUNTER) {
+						if ((rds.count1 & 0xffff) == 0)
+							rds.event = trg.rds.type1;
+					} else if (trg.rds.type1 == RDS_SWITCH) {
+						rds.event = trg.rds.type1;
+					}
+				}
+#endif
 			}
 #if !(DEV_SERVICES & SERVICE_KEY)
 			if (trg.rds.type1 == RDS_CONNECT) { // connect mode

@@ -45,6 +45,7 @@ $(OUT_PATH)/src/logger.o \
 $(OUT_PATH)/src/blt_common.o\
 $(OUT_PATH)/src/ccm.o \
 $(OUT_PATH)/src/custom_beacon.o \
+$(OUT_PATH)/src/room_setpoint.o \
 $(OUT_PATH)/src/mi_beacon.o \
 $(OUT_PATH)/src/bthome_beacon.o \
 $(OUT_PATH)/src/scanning.o \

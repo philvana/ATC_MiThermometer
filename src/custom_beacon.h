@@ -27,7 +27,9 @@ typedef struct __attribute__((packed)) _adv_custom_t {
 	s16		temperature; // x 0.01 degree
 	u16		humidity; // x 0.01 %
 	u16		battery_mv; // mV
-	u8		battery_level; // 0..100 %
+	/* MJWSD05MMC* + cfg_hide_clock: battery_level = room setpoint x0.5 °C (OMG field "batt", /2).
+	 * Otherwise 0..100 %. Real battery: use "volt" in OMG. */
+	u8		battery_level;
 	u8		counter; // measurement count
 	u8		flags;
 } adv_custom_t, * padv_custom_t;
@@ -59,7 +61,7 @@ typedef struct __attribute__((packed)) _adv_cust_head_t {
 typedef struct __attribute__((packed)) _adv_cust_data_t {
 	s16		temp;		//@0
 	u16		humi;		//@2
-	u8		bat;		//@4
+	u8		bat;		//@4 (setpoint x0.5 °C on MJWSD05 when hide-clock, else %)
 	u8		trg;		//@5
 } adv_cust_data_t, * padv_cust_data_t;
 

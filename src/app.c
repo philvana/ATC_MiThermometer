@@ -23,6 +23,9 @@
 #if (DEV_SERVICES & SERVICE_RDS)
 #include "rds_count.h"
 #endif
+#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+#include "room_setpoint.h"
+#endif
 #if (DEV_SERVICES & SERVICE_HISTORY)
 #include "logger.h"
 #endif
@@ -85,9 +88,9 @@ const cfg_t def_cfg = {
 		.event_adv_cnt = 6,
 		.flg3.adv_interval_delay = 10,
 #if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
-		.flg3.no_clock_display = true,
-#endif
-#if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
+		.flg.time_am_pm = false, /* hide clock (TelinkMiFlasher: 12-hour clock off) */
+		.flg2.screen_type = SCR_TYPE_TEMP,
+		.room_sp_idx = 0, /* 10.0 °C */
 		.advertising_interval = 80, // multiply by 62.5 ms = 5 sec
 		.measure_interval = 4, // * advertising_interval = 20 sec
 		.hw_ver = HW_VER_MJWSD05MMC,
@@ -676,6 +679,10 @@ static void suspend_enter_cb(u8 e, u8 *p, int n) {
 #if (DEV_SERVICES & SERVICE_KEY)
 	cpu_set_gpio_wakeup(GPIO_KEY2, BM_IS_SET(reg_gpio_in(GPIO_KEY2), GPIO_KEY2 & 0xff)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
 #endif
+#if ((DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)) && defined(GPIO_KEY1)
+	if (cfg_hide_clock())
+		cpu_set_gpio_wakeup(GPIO_KEY1, Level_Low, 1); /* bottom key: wake on press */
+#endif
 	bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
 }
 #endif // (DEV_SERVICES & SERVICE_KEY) || (DEV_SERVICES & SERVICE_RDS)
@@ -859,11 +866,20 @@ void user_init_normal(void) {//this will get executed one time after power up
 			flash_write_cfg(&cfg, EEP_ID_CFG, sizeof(cfg));
 		}
 #if (DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)
-		/* OTA keeps cfg in flash; apply hide-clock default once after upgrade to 0x58+. */
-		if (old_ver < 0x58) {
-			cfg.flg3.no_clock_display = def_cfg.flg3.no_clock_display;
+		/* OTA keeps cfg: hide clock via time_am_pm=0 (uncheck "12-hour clock" in flasher). */
+		if (old_ver <= 0x58 || (((u8 *)&cfg.flg3)[0] & 0x10)) {
+			cfg.flg.time_am_pm = 0;
+			((u8 *)&cfg.flg3)[0] &= ~0x10; /* drop legacy no_clock_display bit if present */
+			if (cfg.room_sp_idx >= 12)
+				cfg.room_sp_idx = 0;
 			flash_write_cfg(&cfg, EEP_ID_CFG, sizeof(cfg));
 		}
+#if (DEV_SERVICES & SERVICE_RDS)
+		if (!trg.rds.rs1_invert) {
+			trg.rds.rs1_invert = 1;
+			flash_write_cfg(&trg, EEP_ID_TRG, FEEP_SAVE_SIZE_TRG);
+		}
+#endif
 #endif
 	} else {
 #if (DEV_SERVICES & SERVICE_PINCODE)
@@ -1032,6 +1048,10 @@ void main_loop(void) {
 #endif
 			rds_task();
 #endif // (DEV_SERVICES & SERVICE_RDS)
+#if ((DEVICE_TYPE == DEVICE_MJWSD05MMC) || (DEVICE_TYPE == DEVICE_MJWSD05MMC_EN)) && defined(GPIO_KEY1)
+		if (cfg_hide_clock())
+			room_sp_key_poll();
+#endif
 #if USE_SENSOR_HX71X && (DEV_SERVICES & SERVICE_PRESSURE)
 	hx71x_task();
 #endif

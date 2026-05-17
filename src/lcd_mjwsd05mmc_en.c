@@ -5,6 +5,7 @@
 #include "drivers.h"
 #include "drivers/8258/gpio_8258.h"
 #include "app.h"
+#include "room_setpoint.h"
 #include "i2c.h"
 #if (DEV_SERVICES & SERVICE_HARD_CLOCK)
 #include "rtc.h"
@@ -656,7 +657,7 @@ void show_s4_number_x10(s32 number, u8 atr){
 }
 
 void show_clock_s3(void) {
-	if (cfg.flg3.no_clock_display) {
+	if (cfg_hide_clock()) {
 		clear_s3();
 		return;
 	}
@@ -689,7 +690,7 @@ void show_clock_s3(void) {
 }
 
 void show_clock_s1(void) {
-	if (cfg.flg3.no_clock_display) {
+	if (cfg_hide_clock()) {
 		clear_s1();
 		return;
 	}
@@ -719,6 +720,19 @@ void show_clock_s1(void) {
 	lcd_set_digit(display_buff, min / 10 % 10, sb_s1[2]);
 	lcd_set_digit(display_buff, min % 10, sb_s1[3]);
 #endif
+}
+
+/* Consigne pièce (°C) in s2 zone: 10, 18, 18.5, … */
+static void show_s2_setpoint(u8 sp_x2) {
+	u8 t = sp_x2 / 2;
+	clear_s2();
+	if (sp_x2 & 1)
+		display_buff[8] |= BIT(0); // decimal point
+	if (t >= 10)
+		lcd_set_digit(display_buff, t / 10, sb_s2[0]);
+	lcd_set_digit(display_buff, t % 10, sb_s2[1]);
+	if (sp_x2 & 1)
+		lcd_set_digit(display_buff, 5, sb_s2[2]);
 }
 
 static void show_data_s2(u8 flg_wd, u8 date_ddmm) {
@@ -805,6 +819,10 @@ void lcd(void) {
 	if(cfg.flg2.screen_off) {
 		return;
 	}
+	if (cfg_hide_clock()) {
+		clear_s1();
+		clear_s3();
+	}
 	u8 screen_type = cfg.flg2.screen_type;
 	if(lcd_flg.chow_ext_ut >= wrk.utc_time_sec)
 		screen_type = SCR_TYPE_EXT;
@@ -879,7 +897,7 @@ void lcd(void) {
 	}
 	display_buff[3] &= ~(BIT(0));
 	display_buff[2] &= ~(BIT(0));
-	if(!cfg.flg3.no_clock_display && cfg.flg.time_am_pm) {
+	if(!cfg_hide_clock() && cfg.flg.time_am_pm) {
 		if(rtc.hours >= 12) {
 			display_buff[2] |= BIT(0);
 		} else {
@@ -892,7 +910,10 @@ void lcd(void) {
 		else
 			show_smiley(LCD_SYM_SMILEY_NONE);
 	}
-	show_data_s2(cfg.flg3.not_day_of_week, cfg.flg3.date_ddmm);
+	if (cfg_hide_clock())
+		show_s2_setpoint(room_sp_x2());
+	else
+		show_data_s2(cfg.flg3.not_day_of_week, cfg.flg3.date_ddmm);
 }
 
 

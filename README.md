@@ -357,7 +357,7 @@ and measurement interval of 10 seconds:
 **Xiaomi Mijia (MJWSD05MMC)**
 
 > **Fork feature (`setpoint-temperature` branch):** room setpoint on LCD + BLE for OMG/Home Assistant.  
-> See [docs/MJWSD05MMC_ROOM_SETPOINT.md](docs/MJWSD05MMC_ROOM_SETPOINT.md).
+> See [docs/MJWSD05MMC_ROOM_SETPOINT.md](docs/MJWSD05MMC_ROOM_SETPOINT.md) (EN) · [docs/ANNEXE_A_THERMOMETRES.md](docs/ANNEXE_A_THERMOMETRES.md) (FR, mode d’emploi).
 
 Using the default settings for advertising interval of 5 seconds and measurement interval of 20 seconds:
 
